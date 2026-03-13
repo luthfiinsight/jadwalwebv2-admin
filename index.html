@@ -2,63 +2,65 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Dashboard - RS Tipe C</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - RS Hermina Padang</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #f8f9fa; --card: #ffffff; --text: #212529; }
-        body.dark-mode { --bg: #1a1a1a; --card: #2d2d2d; --text: #e0e0e0; }
-        body { background: var(--bg); color: var(--text); padding: 2rem; transition: 0.3s; }
-        .admin-container { background: var(--card); border-radius: 20px; padding: 35px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
-        .form-control, .form-select { background: var(--bg); color: var(--text); border: 1px solid rgba(86,171,47,0.2); border-radius: 12px; }
-        .form-control:focus { border-color: #56ab2f; box-shadow: 0 0 0 0.25rem rgba(86,171,47,0.1); }
-        .btn-save { background: linear-gradient(135deg, #a8e063, #56ab2f); border: none; font-weight: 700; padding: 12px; border-radius: 12px; color: white; }
+        :root { --bg: #f8fafc; --card: #ffffff; --text: #1e293b; --border: #e2e8f0; --p-grad: linear-gradient(135deg, #a8e063, #56ab2f); }
+        body.dark-mode { --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --border: #334155; }
+        body { background: var(--bg); color: var(--text); font-family: 'Poppins', sans-serif; transition: 0.3s; padding: 2rem; }
+        .admin-card { background: var(--card); border-radius: 24px; padding: 35px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); border: 1px solid var(--border); }
+        h2 { font-weight: 700; background: var(--p-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .form-control, .form-select { background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
+        .form-control:focus { border-color: #56ab2f; box-shadow: 0 0 0 4px rgba(86,171,47,0.1); background: var(--bg); color: var(--text); }
+        .btn-save { background: var(--p-grad); border: none; font-weight: 700; border-radius: 12px; padding: 14px; color: white; transition: 0.3s; }
+        .btn-save:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(86,171,47,0.2); color: white; }
+        #darkModeToggle { position: fixed; top: 20px; right: 20px; background: var(--card); border: 1px solid var(--border); width: 45px; height: 45px; border-radius: 50%; color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
-    <div class="container admin-container">
-        <h2 class="text-center mb-4" style="font-weight: 700;">Panel Kontrol Jadwal Dokter</h2>
-        <form id="docForm" class="row g-4">
+    <button id="darkModeToggle">🌓</button>
+    <div class="container admin-card">
+        <h2 class="text-center mb-4">Panel Admin Jadwal Dokter</h2>
+        <form id="docForm" class="row g-3">
             <input type="hidden" id="rowId">
-            <div class="col-md-6"><label>Nama Dokter</label><input type="text" id="NamaDokter" class="form-control" list="listD" required><datalist id="listD"></datalist></div>
-            <div class="col-md-6"><label>Spesialisasi</label><input type="text" id="Spec" class="form-control" list="listS" required><datalist id="listS"></datalist></div>
-            <div class="col-md-4"><label>Layanan</label><select id="Layanan" class="form-select"><option value="BPJS">BPJS</option><option value="Eksekutif">Eksekutif</option><option value="BPJS, Eksekutif">Keduanya</option></select></div>
-            <div class="col-md-4"><label>Tipe Jadwal</label><select id="Tipe" class="form-select" onchange="toggleT()"><option value="Permanen">Permanen</option><option value="Sementara">Sementara</option></select></div>
-            <div class="col-md-4"><label>Hari</label><select id="Hari" class="form-select"><option value="1. Monday">Senin</option><option value="2. Tuesday">Selasa</option><option value="3. Wednesday">Rabu</option><option value="4. Thursday">Kamis</option><option value="5. Friday">Jumat</option><option value="6. Saturday">Sabtu</option></select></div>
-            <div class="col-md-6 d-f d-none"><label>Berlaku Dari</label><input type="text" id="Dari" class="form-control"></div>
-            <div class="col-md-6 d-f d-none"><label>Berlaku Hingga</label><input type="text" id="Hingga" class="form-control"></div>
-            <div class="col-md-6"><label>Jam Mulai</label><input type="text" id="JM" class="form-control"></div>
-            <div class="col-md-6"><label>Jam Selesai</label><input type="text" id="JS" class="form-control"></div>
-            <div class="col-md-4"><label>Status</label><select id="Status" class="form-select"><option value="">Aktif (Praktek)</option><option value="Tidak Praktek">TIDAK PRAKTEK</option></select></div>
-            <div class="col-md-8"><label>Keterangan Khusus</label><input type="text" id="Ket" class="form-control" placeholder="Contoh: Sedang Cuti"></div>
-            <div class="col-12"><button type="submit" class="btn-save w-100">SIMPAN PERUBAHAN JADWAL</button></div>
+            <div class="col-md-4"><label class="form-label">Nama Dokter</label><input type="text" id="NamaDokter" class="form-control" list="listD" required placeholder="Ketik Nama Dokter"><datalist id="listD"></datalist></div>
+            <div class="col-md-4"><label class="form-label">Spesialisasi</label><input type="text" id="Spec" class="form-control" list="listS" required placeholder="Ketik Spesialisasi"><datalist id="listS"></datalist></div>
+            <div class="col-md-4"><label class="form-label">Layanan</label><select id="Layanan" class="form-select" required><option value="BPJS">BPJS</option><option value="Eksekutif">Eksekutif</option><option value="BPJS, Eksekutif">Keduanya</option></select></div>
+            <div class="col-md-3"><label class="form-label">Tipe Jadwal</label><select id="Tipe" class="form-select" onchange="toggleDates()"><option value="Permanen">Permanen</option><option value="Sementara">Sementara</option></select></div>
+            <div class="col-md-3 date-field d-none"><label class="form-label">Mulai</label><input type="text" id="Dari" class="form-control" placeholder="YYYY-MM-DD"></div>
+            <div class="col-md-3 date-field d-none"><label class="form-label">Hingga</label><input type="text" id="Hingga" class="form-control" placeholder="YYYY-MM-DD"></div>
+            <div class="col-md-3"><label class="form-label">Hari</label><select id="Hari" class="form-select"><option value="1. Monday">Senin</option><option value="2. Tuesday">Selasa</option><option value="3. Wednesday">Rabu</option><option value="4. Thursday">Kamis</option><option value="5. Friday">Jumat</option><option value="6. Saturday">Sabtu</option></select></div>
+            <div class="col-md-3"><label class="form-label">Jam Praktik</label><div class="input-group"><input type="text" id="JM" class="form-control" placeholder="08:00"><span class="input-group-text">s/d</span><input type="text" id="JS" class="form-control" placeholder="12:00"></div></div>
+            <div class="col-md-4"><label class="form-label">Status</label><select id="Status" class="form-select"><option value="">Aktif (Praktek)</option><option value="Tidak Praktek">Tidak Praktek</option></select></div>
+            <div class="col-md-8"><label class="form-label">Keterangan</label><input type="text" id="Ket" class="form-control" placeholder="Misal: Sedang Cuti"></div>
+            <div class="col-12"><button type="submit" class="btn-save w-100">SIMPAN JADWAL</button></div>
         </form>
         <hr class="my-5">
-        <div class="table-responsive"><table class="table table-hover align-middle">
-            <thead class="table-dark"><tr><th>Dokter</th><th>Layanan</th><th>Waktu</th><th>Tipe</th><th>Aksi</th></tr></thead>
-            <tbody id="adminTable"></tbody>
-        </table></div>
+        <div class="table-responsive"><table class="table align-middle"><thead><tr><th>Dokter</th><th>Layanan</th><th>Waktu</th><th>Tipe</th><th>Aksi</th></tr></thead><tbody id="adminTable"></tbody></table></div>
     </div>
-
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
         const API = 'GANTI_URL_WEB_APP_ANDA';
-        let dataJ = [];
+        let dataJadwal = [];
         flatpickr("#JM, #JS", { enableTime: true, noCalendar: true, dateFormat: "H:i", time_24hr: true });
         flatpickr("#Dari, #Hingga", { dateFormat: "Y-m-d" });
-        function toggleT() { const isT = document.getElementById('Tipe').value === 'Sementara'; document.querySelectorAll('.d-f').forEach(e => e.classList.toggle('d-none', !isT)); }
-        async function refresh() {
-            const res = await fetch(API + '?view=admin'); const json = await res.json(); dataJ = json.jadwal;
+        function toggleDates() { const isT = document.getElementById('Tipe').value === 'Sementara'; document.querySelectorAll('.date-field').forEach(el => el.classList.toggle('d-none', !isT)); }
+        async function refreshData() {
+            const res = await fetch(API + '?view=admin'); const json = await res.json(); dataJadwal = json.jadwal;
             document.getElementById('listD').innerHTML = json.master.map(m => `<option value="${m.nama}">`).join('');
             document.getElementById('listS').innerHTML = [...new Set(json.master.map(m => m.spec))].map(s => `<option value="${s}">`).join('');
             document.getElementById('NamaDokter').addEventListener('change', function() { const f = json.master.find(m => m.nama === this.value); if(f) document.getElementById('Spec').value = f.spec; });
             const tb = document.getElementById('adminTable'); tb.innerHTML = '';
-            dataJ.forEach(d => { tb.innerHTML += `<tr><td><b>${d.NamaDokter}</b><br><small>${d.Spesialisasi}</small></td><td>${d.Layanan}</td><td>${d.Hari}<br>${d.Jam}</td><td>${d.TipeJadwal}</td><td><button class="btn btn-sm btn-warning" onclick="editData(${d.rowId})">Edit</button> <button class="btn btn-sm btn-danger" onclick="delData(${d.rowId})">Hapus</button></td></tr>`; });
+            dataJadwal.forEach(d => { tb.innerHTML += `<tr><td><b>${d.NamaDokter}</b><br><small>${d.Spesialisasi}</small></td><td>${d.Layanan}</td><td>${d.Hari}<br>${d.Jam}</td><td>${d.TipeJadwal}</td><td><button class="btn btn-sm btn-outline-warning" onclick="editData(${d.rowId})">Edit</button> <button class="btn btn-sm btn-outline-danger" onclick="delData(${d.rowId})">Hapus</button></td></tr>`; });
         }
         document.getElementById('docForm').onsubmit = async (e) => { e.preventDefault(); const j = `${document.getElementById('JM').value} - ${document.getElementById('JS').value}`; const p = { action: document.getElementById('rowId').value ? 'update' : 'add', rowId: document.getElementById('rowId').value, NamaDokter: document.getElementById('NamaDokter').value, Spesialisasi: document.getElementById('Spec').value, Layanan: document.getElementById('Layanan').value, Hari: document.getElementById('Hari').value, Jam: j, Status: document.getElementById('Status').value, Keterangan: document.getElementById('Ket').value, TipeJadwal: document.getElementById('Tipe').value, BerlakuDari: document.getElementById('Dari').value, BerlakuHingga: document.getElementById('Hingga').value }; await fetch(API, {method:'POST', body: JSON.stringify(p)}); location.reload(); };
-        function editData(id) { const d = dataJ.find(x => x.rowId === id); document.getElementById('rowId').value = d.rowId; document.getElementById('NamaDokter').value = d.NamaDokter; document.getElementById('Spec').value = d.Spesialisasi; document.getElementById('Tipe').value = d.TipeJadwal; if(d.Jam.includes(" - ")) { const p = d.Jam.split(" - "); document.getElementById('JM').value = p[0]; document.getElementById('JS').value = p[1]; } toggleT(); window.scrollTo(0,0); }
-        async function delData(id) { if(confirm('Hapus permanen?')) { await fetch(API, {method:'POST', body: JSON.stringify({action:'delete', rowId:id})}); refresh(); } }
-        refresh();
+        function editData(id) { const d = dataJadwal.find(x => x.rowId === id); document.getElementById('rowId').value = d.rowId; document.getElementById('NamaDokter').value = d.NamaDokter; document.getElementById('Spec').value = d.Spesialisasi; if(d.Jam.includes(" - ")) { const p = d.Jam.split(" - "); document.getElementById('JM').value = p[0]; document.getElementById('JS').value = p[1]; } toggleDates(); window.scrollTo(0,0); }
+        async function delData(id) { if(confirm('Hapus permanen?')) { await fetch(API, {method:'POST', body: JSON.stringify({action:'delete', rowId:id})}); refreshData(); } }
+        document.getElementById('darkModeToggle').onclick = () => document.body.classList.toggle('dark-mode');
+        refreshData();
     </script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - RS Hermina Padang</title>
+    <title>Admin - RS Hermina Padang</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
@@ -11,38 +11,27 @@
         :root { --bg: #f8fafc; --card: #ffffff; --text: #1e293b; --border: #e2e8f0; --p-grad: linear-gradient(135deg, #a8e063, #56ab2f); }
         body.dark-mode { --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --border: #334155; }
         body { background: var(--bg); color: var(--text); font-family: 'Poppins', sans-serif; transition: 0.3s; padding: 2rem; }
-        
         .admin-card { background: var(--card); border-radius: 24px; padding: 35px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); border: 1px solid var(--border); }
-        
-        /* Header & Clock */
-        .header-box { text-align: center; margin-bottom: 2rem; }
-        .clock-box { font-weight: 600; margin-top: 10px; }
-        #timeAdmin { font-size: 1.8rem; display: block; }
-        #dateAdmin { font-size: 0.9rem; opacity: 0.7; }
-
         h2 { font-weight: 700; background: var(--p-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .form-control, .form-select, .input-group-text { background: var(--bg) !important; color: var(--text) !important; border: 1px solid var(--border) !important; border-radius: 12px; padding: 12px; }
-        
-        /* Fix for s/d in Dark Mode */
-        body.dark-mode .input-group-text { background: #334155 !important; border-color: #475569 !important; }
-
+        .form-control, .form-select, .input-group-text { background: var(--bg) !important; color: var(--text) !important; border: 1px solid var(--border) !important; border-radius: 12px; }
+        body.dark-mode .input-group-text { background: #334155 !important; }
         .btn-save { background: var(--p-grad); border: none; font-weight: 700; border-radius: 12px; padding: 14px; color: white; transition: 0.3s; }
-        .btn-save:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(86,171,47,0.2); color: white; }
-        
+        #timeA { font-size: 2.2rem; font-weight: 700; display: block; }
+        #dateA { font-size: 1rem; opacity: 0.7; }
+        footer { text-align: center; padding: 40px 20px; opacity: 0.6; font-size: 0.85rem; margin-top: 50px; border-top: 1px solid var(--border); }
         #darkModeToggle { position: fixed; top: 20px; right: 20px; background: var(--card); border: 1px solid var(--border); width: 45px; height: 45px; border-radius: 50%; color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
     <button id="darkModeToggle">🌓</button>
     <div class="container admin-card">
-        <div class="header-box">
-            <h2>Panel Admin Jadwal Dokter</h2>
-            <div class="clock-box">
-                <span id="timeAdmin">00:00:00</span>
-                <span id="dateAdmin">Memuat Tanggal...</span>
+        <div class="text-center mb-4">
+            <h2>Panel Admin Jadwal</h2>
+            <div class="clock-box mt-3">
+                <span id="timeA">00:00:00</span>
+                <span id="dateA">Memuat Tanggal...</span>
             </div>
         </div>
-        
         <form id="docForm" class="row g-3">
             <input type="hidden" id="rowId">
             <div class="col-md-4"><label class="form-label">Nama Dokter</label><input type="text" id="NamaDokter" class="form-control" list="listD" required placeholder="Cari Nama Dokter"><datalist id="listD"></datalist></div>
@@ -55,37 +44,35 @@
             <div class="col-md-3"><label class="form-label">Jam Praktik</label><div class="input-group"><input type="text" id="JM" class="form-control" placeholder="08:00"><span class="input-group-text">s/d</span><input type="text" id="JS" class="form-control" placeholder="12:00"></div></div>
             <div class="col-md-4"><label class="form-label">Status</label><select id="Status" class="form-select"><option value="">Aktif (Praktek)</option><option value="Tidak Praktek">Tidak Praktek</option></select></div>
             <div class="col-md-8"><label class="form-label">Keterangan</label><input type="text" id="Ket" class="form-control" placeholder="Misal: Sedang Cuti"></div>
-            <div class="col-12"><button type="submit" class="btn-save w-100">SIMPAN JADWAL</button></div>
+            <div class="col-12"><button type="submit" class="btn-save w-100">SIMPAN PERUBAHAN</button></div>
         </form>
         <hr class="my-5">
         <div class="table-responsive"><table class="table align-middle"><thead><tr><th>Dokter</th><th>Layanan</th><th>Waktu</th><th>Tipe</th><th>Aksi</th></tr></thead><tbody id="adminTable"></tbody></table></div>
     </div>
+    <footer>
+        &copy; 2026 <b>Luthfi Kurnia SKM</b> - RS Hermina Padang <br>
+        Dashboard Admin v3.3
+    </footer>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
         const API = 'GANTI_URL_WEB_APP_ANDA';
-        let dataJadwal = [];
-
-        function updateAdminClock() {
+        function updateClock() {
             const now = new Date();
-            document.getElementById('timeAdmin').innerText = now.toLocaleTimeString('id-ID', { hour12: false });
-            document.getElementById('dateAdmin').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+            document.getElementById('timeA').innerText = now.toLocaleTimeString('id-ID', { hour12: false });
+            document.getElementById('dateA').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
         }
-        setInterval(updateAdminClock, 1000); updateAdminClock();
-
+        setInterval(updateClock, 1000); updateClock();
         flatpickr("#JM, #JS", { enableTime: true, noCalendar: true, dateFormat: "H:i", time_24hr: true });
         flatpickr("#Dari, #Hingga", { dateFormat: "Y-m-d" });
         function toggleDates() { const isT = document.getElementById('Tipe').value === 'Sementara'; document.querySelectorAll('.date-field').forEach(el => el.classList.toggle('d-none', !isT)); }
         async function refreshData() {
-            const res = await fetch(API + '?view=admin'); const json = await res.json(); dataJadwal = json.jadwal;
+            const res = await fetch(API + '?view=admin'); const json = await res.json();
             document.getElementById('listD').innerHTML = json.master.map(m => `<option value="${m.nama}">`).join('');
             document.getElementById('listS').innerHTML = [...new Set(json.master.map(m => m.spec))].map(s => `<option value="${s}">`).join('');
-            document.getElementById('NamaDokter').addEventListener('change', function() { const f = json.master.find(m => m.nama === this.value); if(f) document.getElementById('Spec').value = f.spec; });
             const tb = document.getElementById('adminTable'); tb.innerHTML = '';
-            dataJadwal.forEach(d => { tb.innerHTML += `<tr><td><b>${d.NamaDokter}</b><br><small>${d.Spesialisasi}</small></td><td>${d.Layanan}</td><td>${d.Hari}<br>${d.Jam}</td><td>${d.TipeJadwal}</td><td><button class="btn btn-sm btn-outline-warning" onclick="editData(${d.rowId})">Edit</button> <button class="btn btn-sm btn-outline-danger" onclick="delData(${d.rowId})">Hapus</button></td></tr>`; });
+            json.jadwal.forEach(d => { tb.innerHTML += `<tr><td><b>${d.NamaDokter}</b><br><small>${d.Spesialisasi}</small></td><td>${d.Layanan}</td><td>${d.Hari}<br>${d.Jam}</td><td>${d.TipeJadwal}</td><td><button class="btn btn-sm btn-outline-warning" onclick="editData(${d.rowId})">Edit</button></td></tr>`; });
         }
         document.getElementById('docForm').onsubmit = async (e) => { e.preventDefault(); const j = `${document.getElementById('JM').value} - ${document.getElementById('JS').value}`; const p = { action: document.getElementById('rowId').value ? 'update' : 'add', rowId: document.getElementById('rowId').value, NamaDokter: document.getElementById('NamaDokter').value, Spesialisasi: document.getElementById('Spec').value, Layanan: document.getElementById('Layanan').value, Hari: document.getElementById('Hari').value, Jam: j, Status: document.getElementById('Status').value, Keterangan: document.getElementById('Ket').value, TipeJadwal: document.getElementById('Tipe').value, BerlakuDari: document.getElementById('Dari').value, BerlakuHingga: document.getElementById('Hingga').value }; await fetch(API, {method:'POST', body: JSON.stringify(p)}); location.reload(); };
-        function editData(id) { const d = dataJadwal.find(x => x.rowId === id); document.getElementById('rowId').value = d.rowId; document.getElementById('NamaDokter').value = d.NamaDokter; document.getElementById('Spec').value = d.Spesialisasi; if(d.Jam.includes(" - ")) { const p = d.Jam.split(" - "); document.getElementById('JM').value = p[0]; document.getElementById('JS').value = p[1]; } toggleDates(); window.scrollTo(0,0); }
-        async function delData(id) { if(confirm('Hapus permanen?')) { await fetch(API, {method:'POST', body: JSON.stringify({action:'delete', rowId:id})}); refreshData(); } }
         document.getElementById('darkModeToggle').onclick = () => document.body.classList.toggle('dark-mode');
         refreshData();
     </script>
